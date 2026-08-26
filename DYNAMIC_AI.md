@@ -70,6 +70,7 @@ internal computation != exported traffic
 prediction error != useful curiosity
 surprise != learning progress
 learning progress != information gain between hypotheses
+latent disagreement != observable information when instruments are noisy
 ```
 
 A deliberately loose sketch is:
@@ -81,11 +82,12 @@ H(t+1)      = W(H(t), q(t), u(t); M(t))
 M(t+1)      = G(M(t), e(t), consequence(t), selected experience)
 ```
 
-Two reverse arrows have now earned experiments:
+Three reverse arrows are now distinct:
 
 ```text
 M -> what deserves scarce H / learning capacity?
-M -> where should scarce observation / interaction be spent next?
+M -> where is interaction still producing learnable progress?
+M -> which experiment should be created to discriminate live explanations?
 ```
 
 ---
@@ -325,7 +327,7 @@ noise fraction at 1200 steps    0.960
 final learnable MSE              0.10898
 ```
 
-A prequential learning-progress signal compared the current predictor to a lagged copy **on a fresh observation before updating from it**. That simple standard-family heuristic improved active allocation:
+A prequential learning-progress signal compared the current predictor to a lagged copy **on a fresh observation before updating from it**. That standard-family heuristic improved active allocation:
 
 ```text
 mean interactions to MSE < .01
@@ -337,21 +339,61 @@ learning progress     350.0
 oracle reducible      305.6
 ```
 
-At 600 interactions:
-
-```text
-random MSE                 0.00823
-count-balanced             0.00798
-uncertainty                0.00791
-learning progress          0.00495
-oracle reducible           0.00379
-```
-
 This is established learning-progress / intrinsic-motivation territory, not a new curiosity algorithm. What matters for Twensday is the architectural result:
 
 > **the learner's current state of knowledge can beneficially change which future observations will train it.**
 
 The limitation matters too. Once the learnable regions are mostly mastered, progress becomes small everywhere and the weak revisit pressure sends the forced-choice agent back toward broad exploration; its noisy-TV fraction rises to `0.411` by 1,200 steps. DYN6 therefore earns scarce-effort allocation, not a permanent oracle of irreducibility.
+
+## DYN7 — research needs experiment value, not merely curiosity
+
+[`results/DYN7.md`](results/DYN7.md)
+
+DYN7 gave the learner 12 competing smooth hypotheses, 21 possible experiments, and five deliberately bad high-noise instruments. The learner maintained an exact Bayesian posterior and chose its next experiment.
+
+The DYN6 learning-progress rule avoided bad instruments but failed as a research selector:
+
+```text
+mean experiments to posterior(true) >= .95
+
+coverage                     20.79
+random                       21.67
+learning progress            33.77
+```
+
+Raw predictive variance recreated noisy TV at the experiment level: it selected a bad instrument on `100%` of trials and reached the confidence target in only `25%` of seeds.
+
+Naive model disagreement also failed because it ignored measurement reliability:
+
+```text
+final bad-instrument fraction    0.817
+confidence-target hit rate       0.708
+```
+
+Standard expected information gain won decisively:
+
+```text
+expected information gain       9.88 mean experiments
+truth-aware oracle              9.02
+coverage                       20.79
+random                         21.67
+learning progress              33.77
+model disagreement             33.90
+raw predictive variance        54.90
+```
+
+So DYN7 kills two tempting slogans:
+
+```text
+research = learning-progress curiosity
+research = ask where models disagree most
+```
+
+The useful object is closer to:
+
+> **Choose an experiment whose possible observations are expected to reduce uncertainty among the explanations still alive, accounting for the reliability of the observation channel.**
+
+That is mature Bayesian experimental-design territory and should be called that.
 
 ---
 
@@ -371,77 +413,101 @@ The surviving pieces are narrower:
 8. a dormant old fast state can accelerate reacquisition when a stable context is genuinely identifiable;
 9. the current noisy partial-cue mechanism does not yet identify that context; outcome-conditioned mode inference explains the gain more simply;
 10. raw prediction error is a bad exploration objective in stochastic worlds, while prequential learning progress can improve where scarce observations are spent;
-11. the knowledge state can now close an active loop by changing the future data distribution it experiences.
+11. the knowledge state can close an active loop by changing the future data distribution it experiences;
+12. learning progress and scientific experiment value are different; the latter requires reasoning over competing explanations and observation reliability;
+13. exact expected information gain beats the current Twensday-style heuristics when the hypothesis set and likelihoods are handed to the machine.
 
-The strongest conceptual sentence is no longer merely:
-
-> **Spend capacity on what slow knowledge cannot explain.**
-
-DYN6 forces the extra clause:
+DYN6 gave:
 
 > **Spend scarce interaction where the boundary of current knowledge is moving — where observation is becoming understanding rather than remaining surprise.**
 
-That sounds like curiosity, but it still is not research.
+DYN7 adds:
+
+> **When the goal is explanation, do not merely seek progress or disagreement. Create observations expected to distinguish the explanations that remain plausible.**
+
+This is closer to one primitive of research, but DYN7 also cheats heavily.
 
 ---
 
-# DYN7 — curiosity becomes experiment choice
+# DYN8 — the hypothesis set must itself become dynamic
 
-A research-like learner does not merely ask:
-
-```text
-where am I still improving?
-```
-
-It often asks:
+DYN7 is easy in one crucial sense:
 
 ```text
-several explanations still fit what I have seen
-which measurement / intervention would make them disagree most?
+all candidate explanations are supplied in advance
+all likelihoods are known
+instrument reliability is known
+exact posterior updates are cheap
+expected information gain is cheap
 ```
 
-That is a different computational object.
+Real research often begins precisely where that setup fails.
 
-DYN7 should therefore give the learner a finite set of competing hypotheses that are deliberately confounded by ordinary observations. The learner chooses an experiment or intervention, observes a consequence, updates belief, and chooses again.
+Candidate explanations can:
 
 ```text
-posterior / slow explanatory state M
-          ↓
-which candidate experiments separate live hypotheses?
-          ↓
-choose intervention a(t)
-          ↓
-world produces consequence
-          ↓
-fast belief / evidence state q changes
-          ↓
-M changes
-          ↺
+appear
+split
+merge
+die
+become relevant only after an anomaly
+need old observations reconsidered
 ```
+
+and the reliability of the measurement process may itself be uncertain or drifting.
+
+That is where Twensday's original finite evolving-structure idea may finally have a non-decorative job.
+
+A possible DYN8 machine is:
+
+```text
+q   fast evidence / current belief state
+H   finite anomalous episodes not explained well by current models
+M   finite active population of explanatory structures
+
+M predicts observations
+        ↓
+reliable residual persists
+        ↓
+H preserves the stubborn case
+        ↓
+current explanation population cannot absorb it
+        ↓
+spawn / split / modify a candidate explanation
+        ↓
+choose discriminative experiment against surviving candidates
+        ↓
+consequence kills, supports, merges or reshapes candidates
+        ↺
+```
+
+The key word is **finite**. The machine cannot retain every hypothesis or every anomalous observation forever.
 
 Mandatory attackers:
 
 ```text
-random experiment choice
-balanced / coverage sampling
-raw predictive variance / surprise heuristics
-learning-progress allocation
-query-by-committee / model disagreement
-standard Bayesian expected information gain
-oracle experiment selector
+exact finite-hypothesis expected information gain whenever available
+particle filters / sequential Monte Carlo
+Bayesian online change-point detection
+online mixture / clustering methods
+ensemble active learning / BALD-style acquisition
+Thompson-style sampling where applicable
+simple fixed-size ensembles with ordinary replacement heuristics
 ```
 
 Kill conditions:
 
-- if learning-progress curiosity does not choose discriminative experiments, do not stretch DYN6 into a research claim;
-- if Bayesian experimental design wins, record that as the right mature mechanism rather than renaming it Twensday;
-- if a cheaper dynamic approximation can track useful model disagreement online, test whether it preserves most of the sample-efficiency gain under changing/nonstationary hypotheses;
-- only after experiment choice works should dormant `H`, recurrence, or structural growth be reintroduced, and only where a task makes them necessary.
+- if a standard particle/ensemble method handles hypothesis birth/death and experiment choice better, use it;
+- if `H` anomaly retention does not improve discovery of a missing explanation, remove it;
+- if structural growth merely recreates a mixture model badly, say so;
+- if dynamic finite structure earns anything, it must do so under a condition exact enumerated Bayesian design cannot cheaply represent: drifting worlds, open-ended candidate models, limited memory, or expensive evaluation.
 
-The useful target is not "autonomous scientist" as a slogan. It is a measurable primitive:
+The concrete DYN8 question is:
 
-> **Can an ongoing learner use its current explanatory uncertainty to create observations that distinguish between explanations faster than passive experience does?**
+> **Can a finite continuously evolving population of candidate explanations preserve most of the experiment-selection value of Bayesian information gain when the hypothesis set itself is not fixed in advance?**
+
+That question reconnects the research loop to Twensday instead of merely renaming Bayesian experimental design.
 
 # Current sentence
 
-> **Dynamic AI, in the Twensday sense, is a continuously running learner in which information can occupy different temporal roles: active state, short causal trace, dormant fast-write memory, and slow reusable knowledge. Slow knowledge can guide scarce memory, and DYN6 shows that a learning-progress signal can also guide what the system samples next. The next wall is harder: turning active curiosity into experiment selection among competing explanations without pretending that standard active learning and Bayesian experimental design do not already exist.**
+> **Dynamic AI, in the Twensday sense, is a continuously running learner in which information can occupy different temporal roles: active state, short causal trace, dormant fast-write memory, and slow reusable knowledge. Slow knowledge can guide scarce memory and exploration. DYN7 shows that research-like experiment choice requires a stronger object than curiosity: explicit competition among explanations plus the expected epistemic value of possible observations. The next wall is whether a finite evolving dynamical system can maintain and revise those explanations when they are not handed to it in advance.**
