@@ -1,0 +1,20 @@
+name: DYN2 circulating memory
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn2_circulating_memory.py'
+      - '.github/workflows/dyn2.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn2:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN2 circulating-memory gate
+        run: python experiments/dyn2_circulating_memory.py --seeds 12 --steps 9000 --delay 20
