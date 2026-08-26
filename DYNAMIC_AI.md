@@ -4,7 +4,7 @@ This is a working research direction, not a novelty claim and not a definition o
 
 The question is narrower than "can an AI have hidden state?" RNNs, reservoirs, SSMs, spiking nets, adaptive filters and control systems already do that.
 
-> **Can a useful AI be built around an ongoing dynamical process whose active state changes the meaning of present traffic, whose finite longer-lived memories preserve only selected information, whose slower explanatory structure can itself change, and whose current knowledge changes what the system chooses to experience next?**
+> **Can a useful AI be built around an ongoing dynamical process whose active state changes the meaning of present traffic, whose finite memory preserves selected information across incompatible timescales, whose explanatory structure can itself change, and whose current knowledge changes what the system chooses to experience next?**
 
 The biological inspiration remains modest:
 
@@ -18,7 +18,7 @@ consequence arrives later
 slower structure changes while all of this continues
 ```
 
-The signal-train grammar is therefore not merely:
+The useful abstraction is therefore not merely:
 
 ```text
 input -> function -> output
@@ -29,33 +29,31 @@ but:
 ```text
 signal perturbs an already-moving system
         ↓
-changed system emits new perturbations
+changed system emits / predicts / acts
         ↓
-those perturb other moving systems
+consequence arrives
         ↓
-some return to a system that is no longer in the same state
-        ↓
-consequence changes what will be easy / remembered / sought next
+fast state changes
+memory allocation changes
+slow explanatory structure may change
+future observations/actions change
+        ↺
 ```
 
 ## Current state variables
-
-The original `fast q + slow M` picture became too small.
 
 ```text
 q   active fast computational / belief state
     what is happening now / what recent traffic currently means
 
 e   short eligibility / causal trace
-    which earlier local event can still receive delayed consequence
+    which earlier event can still receive delayed consequence
 
-H   fast-write, selectively retained dormant state / evidence
-    information allowed to disappear from q but kept because M
-    cannot yet regenerate or explain it
+H   finite fast-write retained state / evidence
+    information allowed to leave q but kept because it may matter later
 
 M   slow reusable knowledge / explanatory structure
-    what the system currently knows how to predict, compress,
-    regenerate, or explain
+    what the system currently predicts, compresses, regenerates or explains
 
 theta (optional)
     expression / output state distinct from internal computation
@@ -72,8 +70,10 @@ internal computation != exported traffic
 prediction error != useful curiosity
 surprise != learning progress
 learning progress != experiment value
-latent model disagreement != observable information
+latent disagreement != observable information
 information gain inside M != evidence that M is adequate
+large residual != evidence worth retaining
+model failure != measurement failure
 ```
 
 A deliberately loose sketch is:
@@ -81,17 +81,18 @@ A deliberately loose sketch is:
 ```text
 q(t+1), y(t) = F(q(t), u(t), peer(t), H(t); M(t), theta(t))
 e(t+1)      = E(e(t), local activity, consequence timing)
-H(t+1)      = W(H(t), q(t), u(t); M(t))
+H(t+1)      = W(H(t), q(t), u(t), reliability; M(t))
 M(t+1)      = G(M(t), e(t), consequence(t), H(t), selected experience)
 ```
 
-The reverse arrows now matter as much as the forward computation:
+The reverse arrows matter as much as the forward computation:
 
 ```text
 M -> what deserves scarce H?
 M -> where is interaction still producing learnable progress?
 M -> which experiment best discriminates live explanations?
 H -> when is current M inadequate enough that a new explanation should exist?
+reliability -> is a stubborn residual about the world or about the sensor?
 ```
 
 ---
@@ -111,17 +112,11 @@ fast temporal state and slow structural trust can do different jobs
 stable addressability matters for delayed structural credit
 ```
 
-Did not survive:
-
-```text
-new optimizer
-```
+Did not survive: a claim to a new optimizer.
 
 ## DYN1 — active temporal listeners
 
 [`results/DYN1.md`](results/DYN1.md)
-
-Removing the supplied lag-product feature gave:
 
 ```text
 hand-written lag detector          0.9699
@@ -137,14 +132,9 @@ Passive multiscale traces alone were not enough. Active local temporal nonlinear
 
 [`results/DYN2.md`](results/DYN2.md)
 
-A two-point `A -> B -> A` loop genuinely stored a binary state. Cutting only the return path gave:
+A two-point `A -> B -> A` loop genuinely stored a binary state; cutting only the return path dropped `0.9765 -> 0.5015`. But a single nonlinear bistable scalar reached `0.9891`.
 
-```text
-before cut    0.9765
-post cut      0.5015
-```
-
-But a single nonlinear bistable scalar reached `0.9891`. Recurrence showed one place state can live, not why a one-bit task needs distributed circulation.
+Recurrence showed one place state can live, not why simple memory needs distributed circulation.
 
 The remaining AIS/axon abstraction is only:
 
@@ -153,7 +143,7 @@ internal state exists
         !=
 it must be exported
         !=
-every internal state / traffic class must be exported identically
+every internal state must be exported identically
 ```
 
 ## DYN3 / DYN3B / DYN3C — memory becomes an economy
@@ -173,15 +163,9 @@ uniform replay               0.6882
 
 > **Worth remembering is not the same as worth training the slow model on repeatedly.**
 
-DYN3C made forgetting an allocation decision. At an 800-event delay:
+DYN3C made forgetting an allocation decision. At an 800-event delay, residual-guided finite memory preserved rare exceptions much better than FIFO.
 
-```text
-capacity 64:   FIFO exception recall 0.0747   residual cache 0.4415
-capacity 128:  FIFO                  0.0747   residual cache 0.7389
-capacity 256:  FIFO                  0.0747   residual cache 0.9498
-```
-
-The slow model became a compression oracle for finite memory:
+What survived:
 
 > **If M can regenerate something, scarce exact H can be spent elsewhere.**
 
@@ -189,7 +173,7 @@ The slow model became a compression oracle for finite memory:
 
 [`results/DYN4.md`](results/DYN4.md) · [`results/DYN4B.md`](results/DYN4B.md)
 
-Forty-eight contexts recur after roughly 1,200 events. A fast state learned during one visit can disappear from active dynamics, remain dormant, and accelerate reacquisition later.
+A fast state learned during one context visit could disappear from active dynamics, remain dormant, and later accelerate reacquisition.
 
 ```text
 no H                            0.8065
@@ -200,13 +184,11 @@ unbounded context table         0.9471
 scrambled residual addresses    0.8034
 ```
 
-Slow-model residual value beat simple `|q|` retention heuristics modestly.
-
 ## DYN5 / DYN5B — associative recall claim killed
 
 [`results/DYN5.md`](results/DYN5.md) · [`results/DYN5B.md`](results/DYN5B.md)
 
-Partial/noisy cues appeared to reinstate a useful dormant state, but attackers removed the alleged associative mechanism:
+Attackers removed the alleged hippocampal mechanism:
 
 ```text
 DYN5 cue+memory confirmation          0.8368
@@ -216,23 +198,13 @@ plain fast q adaptation, eta=.60      0.8474
 exact-ID table                        0.9588
 ```
 
-So the useful operation was **rapid online mode inference from consequence**, not earned hippocampal pattern completion.
+The useful operation was **rapid online mode inference from consequence**, not earned associative pattern completion.
 
 ## DYN6 — active curiosity survives; raw residual does not
 
 [`results/DYN6.md`](results/DYN6.md)
 
-The agent chose among six learnable regions and six irreducibly stochastic noisy-TV regions.
-
-Raw prediction-error curiosity became addicted to noise:
-
-```text
-noise fraction at 360 steps     0.867
-noise fraction at 600 steps     0.920
-noise fraction at 1200 steps    0.960
-```
-
-A fresh-sample prequential learning-progress signal improved sample allocation:
+Raw prediction-error curiosity became addicted to stochastic noisy-TV regions. Fresh-sample prequential learning progress improved where observations were spent:
 
 ```text
 mean interactions to MSE < .01
@@ -252,22 +224,10 @@ Survived:
 
 [`results/DYN7.md`](results/DYN7.md)
 
-DYN7 gave the learner 12 competing smooth hypotheses, 21 experiments, five bad instruments, and an exact Bayesian posterior.
-
-Learning progress failed as a research selector:
+Learning progress failed as a research selector. Raw variance and naive model disagreement were fooled by noisy instruments. Standard expected information gain won decisively:
 
 ```text
-coverage                     20.79 experiments to .95 posterior(true)
-random                       21.67
-learning progress            33.77
-```
-
-Raw predictive variance selected bad instruments on `100%` of trials. Naive model disagreement also failed because it ignored whether the measurement channel could resolve the disagreement.
-
-Standard expected information gain won:
-
-```text
-expected information gain       9.88
+expected information gain       9.88 experiments to .95 posterior(true)
 truth-aware oracle              9.02
 coverage                       20.79
 random                         21.67
@@ -282,93 +242,103 @@ Survived:
 
 That is mature Bayesian experimental design, not a Twensday invention.
 
-## DYN8 — the hypothesis set itself can change, but the attackers still matter
+## DYN8 — explanations can be born, but EIG can become myopic
 
 [`results/DYN8.md`](results/DYN8.md)
 
-DYN8 removes DYN7's biggest cheat: the correct explanation is deliberately **absent** from every finite initial population.
+The correct explanation was deliberately absent from every finite initial population. A grammar of primitives was supplied, but the correct combination was not.
 
-A small grammar of primitives is still supplied. The hidden law is a three-term combination, but the combination/catalog is not given to the six-slot learner.
-
-`H` has only eight stubborn-residual slots and is used only to **propose new explanatory structure**. All finite attackers receive the same compact accumulated evidence for scoring candidates.
-
-### DYN8A — 364 possible explanations, six live slots
-
-32 seeds:
+In the exact-EIG 120-model world with only six live model slots:
 
 ```text
-method                   structure hit   MSE hit   final truth present
-residual_info                 15.59        15.59          .906
-residual_hybrid               12.78        12.78          .969
-residual_random               14.28        14.28          .969
-beam_info                      9.62         9.66         1.000
-smc_info                      15.94        15.94          .938
-smc_hybrid                    14.12        14.12         1.000
-fixed_info                    41.00        41.00          .000
-catalog_info                   4.50         3.75         1.000
+catalog exact      3.04 observations to predictive target
+beam exact         5.75
+residual exact     7.25
+SMC exact          8.38
 ```
 
-The important failure is:
+Residual-guided birth + exact EIG nevertheless constructed the exact hidden model in all 24 seeds.
+
+The stronger claim died: finite Twensday did not preserve most of full enumerated Bayesian-design efficiency, and exhaustive beam search remained stronger when cheap.
+
+The harder 364-model world exposed a separate failure:
 
 ```text
-residual_info       15.59
-residual_random     14.28
+residual + information gain    15.59
+residual + random              14.28
+residual + info + coverage     12.78
 ```
 
-Pure information-aware sampling became **worse than random** while the live explanation population was misspecified.
+Information gain over a wrong live model class can become myopic: it asks brilliant questions inside an inadequate explanatory space.
 
-A small coverage reserve rescued it:
+Survived:
+
+> **An open explanation population needs both epistemic exploitation of current M and enough off-model traffic for M to be shown wrong.**
+
+## DYN9 — future theories need old evidence, but raw residual memory loses
+
+[`results/DYN9.md`](results/DYN9.md)
+
+DYN9 removed DYN8's all-history sufficient-statistics cheat. During the historical phase the true theory does not exist and no future hypothesis can collect custom statistics. Only a tiny raw memory survives. Later, candidate explanations are born and must be evaluated from that retained past.
+
+In the hard gate:
 
 ```text
-residual_hybrid     12.78
+16 grammar primitives
+hidden order 4
+1820 possible future theories
+6 future live slots
+150 historical observations
+only 6 raw memories retained
 ```
+
+### Clean forgotten history
+
+```text
+method                 truth@6   top1   pre-EIG MSE   post-EIG MSE
+reservoir                .969     .875      .2694          .0372
+recent                  1.000     .750      .3916          .0000
+leverage                1.000     .844      .2211          .0000
+raw residual             .750     .406     1.0154          .5233
+stubborn + diverse      1.000     .906      .1283          .0000
+```
+
+Under extreme clean memory pressure, persistent + diverse mismatch earns a narrow positive result: it preserves the future true theory slightly better than generic reservoir and gives the best pre-follow-up predictive quality among the generic finite memories.
+
+### Contaminated forgotten history
+
+With 10% corrupted historical observations:
+
+```text
+method                 truth@6   top1   post-EIG MSE   corruption in memory
+reservoir                .938     .750      .1242              .104
+leverage                 .906     .625      .1415              .089
+raw residual             .625     .281      .7064              .234
+stubborn + diverse       .906     .719      .2030              .172
+```
+
+The ranking flips. Representative reservoir memory is safer than stubborn memory.
+
+Raw residual is decisively dead in this role: it turns a 10% corruption stream into roughly 23% of retained memory.
+
+### DYN9D — static split memory also loses
+
+A fixed half-representative / half-stubborn memory sounded sensible. It did not survive.
+
+In the hard six-slot contaminated world, all tested split thresholds were worse than reservoir/leverage; the best split still produced lower future-theory inclusion and worse post-EIG error.
 
 So:
 
-> **Information gain over M is only information gain inside the explanatory space M currently contains. If M may be wrong, some observation budget must remain capable of producing evidence from outside that focus.**
-
-This matches the known active-learning / adaptive-design misspecification problem rather than constituting a new one.
-
-### DYN8B — exact DYN7 EIG, 120 possible explanations, six live slots
-
-24 seeds:
-
 ```text
-method                   structure hit   MSE hit   final truth present
-residual_exact                 7.25         7.25         1.000
-residual_random                8.12         8.12         1.000
-beam_exact                     5.75         5.75         1.000
-smc_exact                      8.29         8.38          .958
-fixed_exact                   31.00        31.00          .000
-catalog_exact                  4.12         3.04         1.000
+all representative memory      robust default
+all stubborn memory            specialist, clean misspecification only
+raw surprise memory            bad
+static 50/50 split             bad
 ```
 
-This gives a narrow positive result:
+What survives is narrower:
 
-```text
-correct model absent initially
-6 live model slots
-120 possible structures
-residual birth + exact EIG finds the exact hidden structure in all 24 seeds
-```
-
-It is about 11% faster than the same residual birth with random observations and modestly faster than the equal-slot SMC attacker here.
-
-But the stronger claim dies:
-
-```text
-predictive target
-catalog exact      3.04 observations
-beam exact         5.75
-residual exact     7.25
-smc exact          8.38
-```
-
-The finite Twensday machine does **not** preserve most of full enumerated Bayesian-design efficiency in this gate. Exhaustive local beam search also beats stubborn-H proposal search.
-
-What `H` earned is only:
-
-> **A tiny set of stubborn residuals can be a useful directed proposal mechanism for missing model structure under a slot budget; it is not yet a superior inference method.**
+> **Evidence can be valuable to an explanation that did not exist when the evidence arrived, but selecting such evidence requires distinguishing persistent model inadequacy from bad observations.**
 
 ---
 
@@ -376,93 +346,103 @@ What `H` earned is only:
 
 Twensday has repeatedly been beaten by mature or boring mechanisms. That remains the useful part of the process.
 
-The surviving pieces are narrower:
+1. Fast dynamical state and slow structural trust can do different jobs.
+2. Active local temporal nonlinearities can create useful coordinates that passive leaks do not.
+3. State can live in recurrent traffic, though simple memory does not justify distributed recurrence.
+4. Internal computation and exported traffic are worth keeping conceptually separate.
+5. Write speed, retention lifetime and learning speed are different axes.
+6. Retaining an experience and generalizing from it are different decisions.
+7. Slow knowledge can help allocate scarce dormant memory, but raw residual magnitude is not a general retention rule.
+8. Dormant fast state can accelerate reacquisition when context is genuinely identifiable.
+9. The current partial-cue mechanism did not earn associative recall.
+10. Raw prediction error is a bad exploration objective in stochastic worlds.
+11. Prequential learning progress can improve where scarce learning observations are spent.
+12. Knowledge can close an active loop by changing the future data distribution it experiences.
+13. Learning progress and scientific experiment value are different.
+14. Expected information gain is the mature answer when the hypothesis set is fixed and adequate.
+15. A finite explanation population can grow a previously absent correct model inside a supplied grammar.
+16. Information gain can become myopic when the current explanation population is misspecified.
+17. Stubborn residuals can guide model birth modestly, but beam search remains stronger when full historical evidence is cheap.
+18. Tiny retained memories can support hypotheses invented later.
+19. Persistent + diverse residual memory can help under extreme clean model misspecification, but representative memory is more robust to corruption.
+20. A static representative/anomaly split does not solve the tradeoff.
 
-1. fast dynamical state and slow structural trust can do different jobs;
-2. active local temporal nonlinearities can create useful coordinates that passive leaks do not;
-3. state can live in recurrent traffic, though simple memory does not justify distributed recurrence;
-4. internal computation and exported traffic are worth keeping conceptually separate;
-5. write speed, retention lifetime and learning speed are different axes;
-6. retaining an experience and generalizing from it are different decisions;
-7. slow knowledge can guide scarce dormant-memory allocation by identifying what it cannot regenerate;
-8. dormant fast state can accelerate reacquisition when a stable context is genuinely identifiable;
-9. the current partial-cue mechanism did not earn associative recall;
-10. raw prediction error is a bad exploration objective in stochastic worlds;
-11. prequential learning progress can improve where scarce learning observations are spent;
-12. the knowledge state can close an active loop by changing the future data distribution it experiences;
-13. learning progress and scientific experiment value are different;
-14. expected information gain is the correct mature answer in DYN7 when the hypothesis set is fixed and adequate;
-15. a finite explanation population can grow a previously absent correct model inside a supplied grammar;
-16. information gain can become myopic when the current explanation population is misspecified;
-17. stubborn residuals can guide model birth modestly, but exhaustive beam search remains stronger when full historical evidence is cheaply available.
-
-The research loop now has two competing obligations:
+The research loop now has three competing obligations:
 
 ```text
 EXPLOIT CURRENT M
 choose measurements that discriminate live explanations
 
-AND
-
 ALLOW M TO BE WRONG
-preserve enough off-model evidence / exploration
-that a missing explanation can be born
-```
+keep enough off-model evidence / exploration
+for missing explanations to appear
 
-That is a substantially better formulation than "curiosity machine."
+DO NOT CONFUSE BAD DATA WITH NEW PHYSICS
+learn which observation channels deserve trust
+```
 
 ---
 
-# DYN9 — can old evidence survive for theories that do not exist yet?
+# DYN10 — is the model wrong, or is the source wrong?
 
-DYN8 still cheats in exactly the place where DYN3C may become useful again.
+DYN9 gives the learner known nominal instrument noise and then injects corruption behind its back. A useful open-ended learner cannot assume every stubborn residual deserves structural change.
 
-Every new explanation born late can immediately be scored against **all historical evidence** through compact per-action sufficient statistics.
-
-In a more realistic open-ended model space that may be impossible.
-
-A theory born today faces a temporal problem:
+A persistent mismatch can mean:
 
 ```text
-this explanation did not exist when yesterday's evidence arrived
-I did not know which statistics it would need
-I cannot keep all raw history forever
-
-so:
-which old observations were important enough to preserve
-for explanations that had not yet been invented?
+A. current explanatory M is inadequate
+B. the measurement/source is unreliable
+C. the world changed regime
 ```
 
-That is the first clean place where the DYN3C memory result and DYN8 explanatory growth truly meet.
+The next gate should make source reliability latent.
 
-The DYN9 gate should remove the all-history sufficient-statistics cheat.
-
-Give each learner the same hard memory budget and let a missing explanation appear only after enough contradictory evidence accumulates.
-
-Attackers must include:
+A candidate machine keeps separate slow variables for:
 
 ```text
-full-history beam search                 diagnostic upper bound
-large replay buffer
-uniform reservoir sampling
-recent-window replay
-coreset / leverage / influence-style selection where applicable
-SMC / resample-move without special H
-stubborn residual H
-H + diversity / coverage rather than residual alone
+M          explanatory structure
+r_j        trust / reliability of observation source j
+H          finite evidence whose interpretation is still unresolved
 ```
 
-The decisive question is:
+Then evidence should be able to change either:
 
-> **Can a small memory chosen before a hypothesis exists retain the evidence that a late-born hypothesis will need to be evaluated?**
+```text
+residual -> lower trust in source
+```
+
+or:
+
+```text
+residual -> modify / grow explanation
+```
+
+without deciding in advance which one is responsible.
+
+Mandatory attackers:
+
+```text
+Gaussian model with fixed known variance
+Student-t / heavy-tailed robust likelihood
+explicit contamination-mixture likelihood
+robust regression / Huber-style loss
+RANSAC-style fitting where appropriate
+Bayesian per-source reliability estimation
+representative reservoir / coreset memory
+current persistent-residual memory
+```
 
 Kill conditions:
 
-- if ordinary reservoir/coreset memory evaluates late-born models as well as residual H, use the ordinary method;
-- if residual H fills with noisy-TV-like exceptions again, kill raw residual retention in this role;
-- if full-history beam remains necessary, then finite forgotten-history model birth is still unsolved;
-- if small H preserves most of the useful historical discrimination, then DYN3C's forgetting rule has finally earned a concrete research-machine job.
+- if standard robust statistics solve the ambiguity and special H adds nothing, use robust statistics;
+- if source-trust learning merely becomes ordinary heteroscedastic regression, call it that;
+- if the machine changes its theory whenever one bad source misbehaves, it fails;
+- if it distrusts a reliable source that is exposing a genuine missing law, it also fails.
+
+The decisive question is:
+
+> **Can a finite evolving learner decide whether stubborn evidence means “change my explanation” or “trust this observation channel less”?**
 
 # Current sentence
 
-> **Dynamic AI, in the Twensday sense, is becoming less a special neuron and more a finite temporal economy: active state, causal traces, selectively retained evidence, evolving explanatory structure, and actions chosen by what is currently known. DYN8 shows that explanations can be born online and then guide experiment choice, but also that information gain becomes dangerous when its current model class is incomplete. The next wall is whether finite memory can preserve the right old evidence for explanations that do not exist yet.**
+> **Dynamic AI, in the Twensday sense, is becoming a finite temporal economy rather than a special neuron: active state, causal traces, selectively retained evidence, evolving explanatory structure, learned observation trust, and actions chosen by what is currently known. DYN9 shows that old evidence can support theories invented later, but also kills raw surprise as a memory rule. The next wall is whether the machine can separate failure of its model from failure of its evidence source.**
