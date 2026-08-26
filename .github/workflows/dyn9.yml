@@ -1,0 +1,21 @@
+name: DYN9 future-theory memory
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn9_future_theory_memory.py'
+      - 'experiments/dyn8_evolving_hypotheses.py'
+      - '.github/workflows/dyn9.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn9:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN9 future-theory memory gate
+        run: python experiments/dyn9_future_theory_memory.py --seeds 48 --features 12 --actions 21 --order 3 --slots 6 --capacities 8,16,32 --history-steps 126 --followup-steps 10 --contamination 0.08 --contamination-scale 5.0
