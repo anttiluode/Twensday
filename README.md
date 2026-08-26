@@ -12,7 +12,7 @@ Not another neuron metaphor. Not another named learning rule. Inspect the matric
 
 ## Start here
 
-Open [`index.html`](./index.html).
+Open [[`index.html`](./index.html).](https://anttiluode.github.io/Twensday/)
 
 It is a standalone explanatory browser demo with no dependencies. It shows:
 
