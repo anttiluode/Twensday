@@ -58,6 +58,35 @@ That immediately gives Twensday several concrete mathematical questions:
 
 See [`WHAT_CAN_IT_COMPUTE.md`](./WHAT_CAN_IT_COMPUTE.md).
 
+## Atlas 0 — first answer
+
+The first experiment is now in [`results/ATLAS0.md`](./results/ATLAS0.md).
+
+Six growing points were asked to approximate five different `6 x 6` target-operator families using the same kind of dense random signed basis. For every target, Atlas 0 also computes the **best operator reachable inside the same convex hull**, so representation failure is separated from growth-rule failure.
+
+| target family | grown relative error | best-hull error | held-out NMSE |
+|---|---:|---:|---:|
+| reachable sparse | `0.0125` | `0.0006` | `0.00025` |
+| selector / identity | `0.1618` | `0.1352` | `0.0266` |
+| cyclic ring | `0.1860` | `0.1611` | `0.0365` |
+| dense orthogonal mix | `0.0705` | `0.0589` | `0.00698` |
+| rank-2 dense target | `0.0182` | `~0` | `0.00084` |
+
+The first real Twensday finding is therefore:
+
+> **basis geometry is already a computational prior over matrix shape.**
+
+The deliberately dense random basis represents dense mixed rows much more naturally than clean axis-aligned selectors or permutation/ring rows. Most of the selector/ring error is already present in the best-reachable hull attacker.
+
+Two other distinctions appeared immediately:
+
+- a sparse target operator can be reproduced by surprisingly diffuse structural mass;
+- a low-rank effective matrix can also be implemented by diffuse structural mass.
+
+So **structural sparsity, effective-matrix sparsity, and effective rank are not the same quantity**.
+
+That is exactly the kind of distinction this repo should map.
+
 ## Direct lineage
 
 The shortest useful ancestry is:
@@ -129,12 +158,20 @@ Twensday should begin by producing **matrix atlases** rather than another chain 
 
 Suggested sequence:
 
-1. **Linear reachability** — sample many random bases and tasks; compare the grown `W_eff` to unconstrained least squares and to the best point in the basis convex hull.
+1. **Basis geometry** — dense random, axis-enriched, orthogonal, paired ±, sparse random. Ask how the same target matrices move in and out of the reachable hull.
 2. **Matrix taxonomy** — tasks designed to require selection, mixing, rotation, low-rank projection, recurrence, switching, integration, and oscillation.
 3. **Population spectra** — grow 4–16 point systems and inspect rank, singular values, recurrent eigenvalues, sparsity, strongly connected components, and attractors.
 4. **Capacity laws** — sweep total budget and reserve. Measure adaptation speed versus stability.
 5. **Nonlinearity attack** — construct tasks where a linear basis provably cannot solve the target and ask whether local nonlinear conjunctions genuinely add a function class.
 6. **Boring attackers** — least squares, sparse regression, ordinary RNNs, reservoir computing, and matched task-specific algorithms are always allowed to win.
+
+## Run
+
+```bash
+python -m pip install -r requirements.txt
+python experiments/atlas0_linear_reachability.py
+python -m unittest discover -s tests -v
+```
 
 ## Rule for this repo
 
