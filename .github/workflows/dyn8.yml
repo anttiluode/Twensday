@@ -1,0 +1,36 @@
+name: DYN8 evolving hypotheses
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn8_evolving_hypotheses.py'
+      - '.github/workflows/dyn8.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn8:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN8 evolving-hypothesis gate
+        run: >-
+          python experiments/dyn8_evolving_hypotheses.py
+          --seeds 32
+          --features 14
+          --exact-features 10
+          --exact-seeds 24
+          --actions 21
+          --order 3
+          --slots 6
+          --memory 8
+          --max-steps 40
+          --exact-max-steps 30
+          --birth-interval 4
+          --exact-birth-interval 3
+          --mse-threshold 0.05
+          --explore-beta 0.03
+          --smc-moves 3
