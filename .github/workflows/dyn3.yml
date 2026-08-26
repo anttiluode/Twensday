@@ -1,0 +1,20 @@
+name: DYN3 complementary timescales
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn3_complementary_timescales.py'
+      - '.github/workflows/dyn3.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn3:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN3 complementary-timescales gate
+        run: python experiments/dyn3_complementary_timescales.py --seeds 12 --steps 9000
