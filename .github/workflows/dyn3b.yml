@@ -1,0 +1,21 @@
+name: DYN3B consolidation gate
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn3_complementary_timescales.py'
+      - 'experiments/dyn3b_consolidation_gate.py'
+      - '.github/workflows/dyn3b.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn3b:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN3B consolidation gate
+        run: python experiments/dyn3b_consolidation_gate.py --seeds 12 --steps 9000
