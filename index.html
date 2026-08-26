@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Twensday — Growing Matrices</title>
+<style>
+  :root{
+    --bg:#071018; --panel:#0d1822; --panel2:#111f2a; --ink:#e8f1f7; --muted:#8da2b2;
+    --line:#223746; --accent:#79d7c7; --hot:#ffd166; --bad:#ff7b72; --cold:#72a7ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(circle at 20% 0%,#132330 0,#071018 42%);color:var(--ink);font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  a{color:var(--accent)}
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 22px 80px}
+  header{padding:36px 0 20px;display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:end}
+  h1{font-size:clamp(40px,7vw,88px);line-height:.92;margin:0;letter-spacing:-.06em}
+  h1 span{display:block;color:var(--accent);font-size:.34em;letter-spacing:.03em;margin-top:16px}
+  h2{font-size:22px;margin:0 0 12px} h3{font-size:15px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+  p{color:#bfd0dc}.lead{font-size:17px;max-width:760px}
+  .tag{display:inline-block;padding:5px 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted);margin:3px 4px 3px 0;font-size:12px}
+  .card{background:linear-gradient(180deg,rgba(17,31,42,.94),rgba(10,20,29,.94));border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 12px 42px rgba(0,0,0,.18)}
+  .hero-note{border-left:2px solid var(--accent);padding-left:16px;color:#cfe1e9}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+  button,select,input{font:inherit}
+  button,select{background:#122431;color:var(--ink);border:1px solid #2a4658;border-radius:8px;padding:9px 12px;cursor:pointer}
+  button:hover{border-color:var(--accent)} button.primary{background:#173b3a;border-color:#2d6d68}
+  button.danger{background:#371e25;border-color:#6d3542}
+  label{color:var(--muted);font-size:12px}
+  .demo{margin-top:26px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 16px}
+  .stat{background:#09141d;border:1px solid var(--line);border-radius:10px;padding:11px}
+  .stat b{display:block;font-size:20px;color:var(--ink)} .stat small{color:var(--muted)}
+  .vizgrid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px;align-items:start}
+  .matrix{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;aspect-ratio:1/1}
+  .cell{position:relative;border:1px solid #1d3442;border-radius:5px;background:#0a141c;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .cell .fill{position:absolute;inset:auto 0 0;height:0;background:linear-gradient(180deg,var(--cold),var(--accent));opacity:.85;transition:height .08s linear}
+  .cell .num{position:relative;font-size:9px;color:#d8e5eb;text-shadow:0 1px 2px #000}
+  .heat{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+  .hcell{aspect-ratio:1/1;border-radius:3px;border:1px solid rgba(255,255,255,.05)}
+  .barrow{display:grid;grid-template-columns:44px 1fr 54px;gap:8px;align-items:center;margin:7px 0;font-size:12px}
+  .bar{height:12px;background:#08121a;border:1px solid var(--line);border-radius:999px;overflow:hidden;position:relative}
+  .bar .pos,.bar .neg{position:absolute;top:0;bottom:0;width:0;transition:width .08s linear}.bar .pos{left:50%;background:var(--accent)}.bar .neg{right:50%;background:var(--bad)}
+  .bar .mid{position:absolute;left:50%;top:0;bottom:0;border-left:1px solid #617583}
+  .explain{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .equation{font-size:17px;color:#eef8fb;background:#07131b;border:1px solid var(--line);padding:12px;border-radius:10px;overflow:auto}
+  .timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+  .step{border-top:2px solid var(--line);padding-top:9px;color:var(--muted);font-size:12px}.step strong{color:var(--ink);display:block;margin-bottom:4px}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+  .repo-list,.paper-list{display:grid;gap:8px}.repo-list a,.paper-list a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:9px;text-decoration:none;background:#0a151e}.repo-list a:hover,.paper-list a:hover{border-color:var(--accent)}
+  .small{font-size:12px;color:var(--muted)}
+  .warn{color:#ffdca0}
+  .footer{margin-top:34px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted)}
+  @media(max-width:900px){header,.vizgrid,.explain,.twocol{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.timeline{grid-template-columns:1fr 1fr}.matrix{max-width:540px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="tag">Sol thinking repo</div><div class="tag">development demo</div><div class="tag">not a biology simulator</div>
+      <h1>Twensday<span>what can a growing matrix compute?</span></h1>
+      <p class="lead">A point begins with many possible local computations and one finite structural budget. Repeated useful traffic does not merely change a number: it reallocates that budget, making some computations and recurrent routes structurally dominant while leaving a small reserve for alternatives.</p>
+    </div>
+    <div class="hero-note">
+      <b>The question changed.</b><br><br>
+      Earlier work asked whether geometry, phase, source separation, or recurrent traffic could do something useful. Twensday asks a simpler engineering/mathematical question:
+      <br><br><b>What family of operators does this constrained growth process actually produce?</b>
+    </div>
+  </header>
+
+  <section class="card demo">
+    <h2>Live toy: watch structural mass become an operator</h2>
+    <p>This browser model is deliberately simpler than the Python gates. It preserves the central constraint: <b>positive local growth + one conserved budget + exploratory reserve</b>. In <i>relation matrix</i> mode, cells are explicit pairwise relations. In <i>generic basis</i> mode, every cell is a dense signed mixture of all raw inputs, so the structural mass and the effective input-space operator are different objects.</p>
+
+    <div class="controls">
+      <select id="mode">
+        <option value="generic">generic mixed basis (Gate 15 idea)</option>
+        <option value="relation">pairwise relation matrix (Gate 10 idea)</option>
+      </select>
+      <button id="run" class="primary">run growth</button>
+      <button id="world">change utility</button>
+      <button id="reset">reset diffuse</button>
+      <button id="scramble" class="danger">scramble addresses: off</button>
+    </div>
+    <div class="controls">
+      <label>exploratory reserve <input id="reserve" type="range" min="0" max="0.006" step="0.0002" value="0.001" /></label>
+      <label>growth speed <input id="eta" type="range" min="0.02" max="0.5" step="0.01" value="0.16" /></label>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><small>step</small><b id="stepStat">0</b></div>
+      <div class="stat"><small>target error</small><b id="errStat">—</b></div>
+      <div class="stat"><small>effective occupied cells</small><b id="occStat">36.0</b></div>
+      <div class="stat"><small>mass on current useful set</small><b id="useStat">0.111</b></div>
+    </div>
+
+    <div class="vizgrid">
+      <div class="card">
+        <h3>structural mass M</h3>
+        <div id="matrix" class="matrix"></div>
+        <p class="small">All cells share one unit budget. In generic mode this 6×6 layout is only a display grid: the cells are arbitrary persistent internal coordinates, not rows/columns with semantic names.</p>
+      </div>
+
+      <div class="card" id="basisCard">
+        <h3>fixed basis R</h3>
+        <div id="basis" class="heat"></div>
+        <p class="small">Each row is one candidate internal computation. Cyan means positive loading, red negative. In generic mode every feature mixes every raw stream.</p>
+      </div>
+
+      <div class="card">
+        <h3>effective operator in raw input space</h3>
+        <div id="bars"></div>
+        <div class="equation" id="equation">w_eff = Σ mₖ rₖ</div>
+        <p class="small">Structural mass is nonnegative. The effective operator can still have signed coefficients because the available basis directions are signed.</p>
+      </div>
+    </div>
+
+    <div class="explain">
+      <div class="card"><h3>1 · potential</h3><p>Begin diffuse. Every candidate gets a little capacity, so the point has many weak possible computations.</p></div>
+      <div class="card"><h3>2 · consequence</h3><p>Useful activity leaves positive growth evidence. There is no explicit command saying “subtract exactly this much from that other cell.”</p></div>
+      <div class="card"><h3>3 · conservation</h3><p>Because total mass is fixed, growth somewhere automatically retracts investment elsewhere. The reserve keeps abandoned coordinates sampleable.</p></div>
+    </div>
+    <p class="small warn">The HTML demo is explanatory, not a new experimental receipt. The falsification gates and their attackers live in <a href="https://github.com/anttiluode/yrotisopeRweN">yrotisopeRweN</a>.</p>
+  </section>
+
+  <section class="twocol">
+    <div class="card">
+      <h2>So what matrices can it produce?</h2>
+      <p><b>Linear generic-basis case.</b> With fixed basis vectors <code>rₖ</code> and conserved masses <code>mₖ ≥ 0</code>,</p>
+      <div class="equation">w_eff = Σₖ mₖ rₖ, &nbsp; Σₖ mₖ = 1</div>
+      <p>One point therefore chooses an effective row from the <b>convex hull</b> of its available basis directions. A population stacks those rows into a matrix. The growth rule determines where inside that constrained operator family the system spends its structural budget.</p>
+      <p><b>Relation-basis case.</b> If the coordinates are explicit products <code>AᵢBⱼ</code>, the mass field itself is a sparse bilinear operator.</p>
+      <p><b>Nonlinear basis.</b> With <code>φ(rₖ·x)</code>, there is no single raw-space matrix anymore: the point is a constrained fixed-feature nonlinear model with trainable structural allocation.</p>
+      <p><b>Continuous/recurrent case.</b> Some effective coefficients act on peer broadcasts. Stack several points and part of the grown operator becomes a recurrent matrix; its spectrum/gain determines whether activity dies, persists, oscillates, or becomes multistable.</p>
+    </div>
+
+    <div class="card">
+      <h2>What can it compute, already?</h2>
+      <p>The earlier repo has individually earned these small verbs:</p>
+      <div class="timeline">
+        <div class="step"><strong>FIT</strong>receiver state changes what matters now</div>
+        <div class="step"><strong>COMPOSE</strong>fixed structure + fast state selects nonlinear relations</div>
+        <div class="step"><strong>CONTEXT</strong>past input can alter later interpretation</div>
+        <div class="step"><strong>CREDIT</strong>eligibility lets delayed consequence reach vanished activity</div>
+        <div class="step"><strong>ALLOCATE</strong>finite growth turns utility into persistent sparse structure</div>
+        <div class="step"><strong>RUN</strong>internal state need not reset when output is emitted</div>
+        <div class="step"><strong>RECUR</strong>state can live in circulating A↔B traffic</div>
+        <div class="step"><strong>GROW LOOP</strong>recurrent routes acquire mass only when persistence is useful</div>
+        <div class="step"><strong>ADDRESS</strong>useful traffic can be anonymous, but its address must stay stable</div>
+        <div class="step"><strong>MIX BASIS</strong>semantic coordinates are unnecessary; stable generic coordinates suffice</div>
+      </div>
+      <p><b>Twensday should stop asking for another verb.</b> It should map the operator families these ingredients produce: rank, sparsity, spectrum, attractors, context-dependent switching, nonlinear conjunctions, and population topology.</p>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2>Development lineage</h2>
+    <p>This repo is a continuation, not a clean-room invention. The useful path through the older work is:</p>
+    <div class="repo-list">
+      <a href="https://github.com/anttiluode/FunctionalArbors"><b>FunctionalArbors</b> — geometry as a parameterization of computation; structural source-separation experiments and strong FIR attackers.</a>
+      <a href="https://github.com/anttiluode/Monday"><b>Monday</b> — consolidated the “persistent structure as computation” question and the Representation / Factorization / Use distinction.</a>
+      <a href="https://github.com/anttiluode/Tuesday"><b>Tuesday</b> — temporal identifiability / ICA–AMUSE–SOBI–IVA side branch; useful machinery, but not the destination here.</a>
+      <a href="https://github.com/anttiluode/yrotisopeRweN"><b>yrotisopeRweN</b> — the direct parent: receiver-relative fit → composition → context → delayed consequence → finite allocation → growing matrices → continuous recurrent traffic → generic coordinates.</a>
+    </div>
+  </section>
+
+  <section class="twocol">
+    <div class="card">
+      <h2>Two papers that changed the abstraction</h2>
+      <div class="paper-list">
+        <a href="https://doi.org/10.1073/pnas.2533168123"><b>Aizenbud et al., PNAS 2026</b><br><span class="small">Dendritic morphology and synaptic nonlinearities enhance functional complexity in human cortical neurons.</span></a>
+        <a href="https://doi.org/10.1523/JNEUROSCI.1922-17.2018"><b>Leterrier, J. Neurosci. 2018</b><br><span class="small">The Axon Initial Segment: An Updated Viewpoint.</span></a>
+      </div>
+      <p class="small">These papers motivated extended/compartmentalized local computation and the separation between continuously evolving internal computation and an output/broadcast boundary. They do <b>not</b> validate the matrix equations or learning rule.</p>
+    </div>
+    <div class="card">
+      <h2>Twensday's first real research program</h2>
+      <p>Instead of adding more biology, enumerate the computation:</p>
+      <p><b>Linear:</b> Which matrices lie inside the basis-constrained convex hull? What ranks and singular spectra appear after growth?</p>
+      <p><b>Recurrent:</b> Which sparse recurrent graphs grow for memory, switching, sequence, oscillator, and control tasks? What happens to spectral radius and attractor count?</p>
+      <p><b>Nonlinear:</b> When do conjunctions genuinely require nonlinear local features, rather than a changed linear basis?</p>
+      <p><b>Plasticity:</b> How do reserve and total capacity trade stability against reallocation?</p>
+      <p><b>Attackers:</b> compare everything against least squares, sparse regression, ordinary RNNs, reservoirs, and matched DSP.</p>
+    </div>
+  </section>
+
+  <div class="footer">Twensday is a development notebook. Pretty matrices are not evidence. Every claimed new capability should still get a kill condition and a boring attacker.</div>
+</div>
+
+<script>
+(() => {
+  const N = 6, K = 36;
+  let running = false, step = 0, world = 0, scramble = false;
+  let reserve = 0.001, eta = 0.16, mode = 'generic';
+  let rng = mulberry32(1337), basis = [], mass = [], score = [], targetMass = [], targetW = [];
+  const matrixEl = document.getElementById('matrix');
+  const basisEl = document.getElementById('basis');
+  const barsEl = document.getElementById('bars');
+
+  function mulberry32(a){ return function(){ let t=a+=0x6D2B79F5; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296; }; }
+  function randn(){ let u=0,v=0; while(!u)u=rng(); while(!v)v=rng(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  function norm(v){ const s=Math.sqrt(v.reduce((a,x)=>a+x*x,0))||1; return v.map(x=>x/s); }
+  function dot(a,b){ let s=0; for(let i=0;i<a.length;i++)s+=a[i]*b[i]; return s; }
+
+  function makeBasis(){
+    basis=[];
+    if(mode==='generic'){
+      for(let k=0;k<K;k++){
+        const row=[];
+        for(let j=0;j<N;j++) row.push((rng()<.5?-1:1)*(0.5+0.5*rng()));
+        basis.push(norm(row));
+      }
+    } else {
+      for(let k=0;k<K;k++){
+        const row=new Array(N).fill(0); row[k%N]=1; basis.push(row);
+      }
+    }
+  }
+
+  function makeTarget(){
+    targetMass=new Array(K).fill(0);
+    let idx = world===0 ? [0,9,20,35] : [4,13,23,30];
+    if(mode==='generic') idx = world===0 ? [2,11,21,33] : [5,16,25,30];
+    idx.forEach(i=>targetMass[i]=1/idx.length);
+    targetW=effective(targetMass);
+  }
+
+  function reset(){
+    step=0; rng=mulberry32(mode==='generic'?1337:7331); makeBasis();
+    mass=new Array(K).fill(1/K); score=new Array(K).fill(0); makeTarget(); render();
+  }
+
+  function project(v){
+    const floor=Math.min(reserve,0.999/K), free=1-K*floor;
+    const ex=v.map(x=>Math.max(x-floor,0)); let s=ex.reduce((a,x)=>a+x,0);
+    if(s<1e-12) return new Array(K).fill(1/K);
+    return ex.map(x=>floor+free*x/s);
+  }
+
+  function effective(m){
+    const w=new Array(N).fill(0);
+    for(let k=0;k<K;k++) for(let j=0;j<N;j++) w[j]+=m[k]*basis[k][j];
+    return w;
+  }
+
+  function oneStep(){
+    step++;
+    let activeBasis=basis;
+    if(scramble){
+      const p=[...Array(K).keys()];
+      for(let i=K-1;i>0;i--){const j=Math.floor(rng()*(i+1));[p[i],p[j]]=[p[j],p[i]];}
+      activeBasis=p.map(i=>basis[i]);
+    }
+    const w=effectiveWithBasis(mass,activeBasis), e=targetW.map((x,j)=>x-w[j]);
+    const prop=new Array(K);
+    for(let k=0;k<K;k++){
+      const raw=Math.max(dot(e,activeBasis[k]),0)*mass[k];
+      score[k]=0.97*score[k]+0.03*raw;
+      prop[k]=mass[k]+eta*score[k];
+    }
+    mass=project(prop);
+  }
+
+  function effectiveWithBasis(m,b){
+    const w=new Array(N).fill(0);
+    for(let k=0;k<K;k++)for(let j=0;j<N;j++)w[j]+=m[k]*b[k][j];
+    return w;
+  }
+
+  function entropyOccupancy(){
+    let h=0; for(const p of mass) h-=p*Math.log(p+1e-15); return Math.exp(h);
+  }
+  function usefulMass(){let s=0;for(let k=0;k<K;k++)if(targetMass[k]>0)s+=mass[k];return s;}
+  function error(){const w=effective(mass);let s=0;for(let j=0;j<N;j++){const d=w[j]-targetW[j];s+=d*d;}return Math.sqrt(s);}
+
+  function buildDOM(){
+    matrixEl.innerHTML=''; for(let k=0;k<K;k++){const c=document.createElement('div');c.className='cell';c.innerHTML='<div class="fill"></div><span class="num"></span>';matrixEl.appendChild(c);}
+    barsEl.innerHTML=''; for(let j=0;j<N;j++){const r=document.createElement('div');r.className='barrow';r.innerHTML=`<span>x${j}</span><div class="bar"><span class="neg"></span><span class="mid"></span><span class="pos"></span></div><span class="val"></span>`;barsEl.appendChild(r);}
+  }
+
+  function renderBasis(){
+    basisEl.innerHTML='';
+    const rows=6;
+    for(let k=0;k<rows;k++)for(let j=0;j<N;j++){
+      const v=basis[k][j], d=document.createElement('div'); d.className='hcell';
+      const a=Math.min(1,Math.abs(v)); d.style.background=v>=0?`rgba(121,215,199,${.10+.85*a})`:`rgba(255,123,114,${.10+.85*a})`; d.title=`r${k}, x${j}: ${v.toFixed(3)}`; basisEl.appendChild(d);
+    }
+  }
+
+  function render(){
+    const cells=matrixEl.children;
+    const max=Math.max(...mass,1/K);
+    for(let k=0;k<K;k++){
+      const fill=cells[k].querySelector('.fill'), num=cells[k].querySelector('.num');
+      fill.style.height=`${Math.min(100,100*mass[k]/max)}%`;
+      num.textContent=mass[k]>=.01?mass[k].toFixed(2):'';
+      cells[k].style.outline=targetMass[k]>0?'1px solid rgba(255,209,102,.8)':'none';
+    }
+    const w=effective(mass), tw=targetW;
+    [...barsEl.children].forEach((r,j)=>{
+      const v=w[j], target=tw[j]; const scale=.65;
+      const pos=r.querySelector('.pos'), neg=r.querySelector('.neg');
+      pos.style.width=`${Math.max(0,Math.min(50,50*v/scale))}%`;
+      neg.style.width=`${Math.max(0,Math.min(50,-50*v/scale))}%`;
+      r.querySelector('.val').textContent=`${v.toFixed(2)} / ${target.toFixed(2)}`;
+    });
+    document.getElementById('stepStat').textContent=step;
+    document.getElementById('errStat').textContent=error().toFixed(3);
+    document.getElementById('occStat').textContent=entropyOccupancy().toFixed(1);
+    document.getElementById('useStat').textContent=usefulMass().toFixed(3);
+    document.getElementById('equation').textContent=mode==='generic'?'w_eff = Σ mₖ rₖ  (signed effective row from nonnegative structural mass)':'M_eff = M  over pairwise relation coordinates AᵢBⱼ';
+    renderBasis();
+  }
+
+  function tick(){ if(running){for(let i=0;i<4;i++)oneStep();render();} requestAnimationFrame(tick); }
+  buildDOM(); reset(); tick();
+
+  document.getElementById('run').onclick=()=>{running=!running;document.getElementById('run').textContent=running?'pause':'run growth';};
+  document.getElementById('world').onclick=()=>{world=1-world;makeTarget();};
+  document.getElementById('reset').onclick=()=>reset();
+  document.getElementById('scramble').onclick=()=>{scramble=!scramble;document.getElementById('scramble').textContent=`scramble addresses: ${scramble?'on':'off'}`;};
+  document.getElementById('reserve').oninput=e=>reserve=+e.target.value;
+  document.getElementById('eta').oninput=e=>eta=+e.target.value;
+  document.getElementById('mode').onchange=e=>{mode=e.target.value;world=0;reset();};
+})();
+</script>
+</body>
+</html>
