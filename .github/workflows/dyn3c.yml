@@ -1,0 +1,21 @@
+name: DYN3C residual memory
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn3_complementary_timescales.py'
+      - 'experiments/dyn3c_residual_memory.py'
+      - '.github/workflows/dyn3c.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn3c:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN3C residual-memory capacity attack
+        run: python experiments/dyn3c_residual_memory.py --seeds 12 --steps 9000 --capacities 32 64 128 256
