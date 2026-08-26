@@ -1,0 +1,20 @@
+name: DYN6 curiosity noisy TV
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn6_curiosity_noisy_tv.py'
+      - '.github/workflows/dyn6.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn6:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN6 curiosity noisy-TV gate
+        run: python experiments/dyn6_curiosity_noisy_tv.py --seeds 48 --learnable 6 --noise 6 --max-steps 1200 --eval-every 30 --threshold 0.01 --warmup 8 --progress-beta 0.01
