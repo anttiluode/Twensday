@@ -1,0 +1,61 @@
+{
+  "development_note": "parameters explored before this committed receipt",
+  "summary": {
+    "twensday_mse": {
+      "mean": 0.01956225036538079,
+      "std": 0.0013303679370318174
+    },
+    "signed_simplex_mse": {
+      "mean": 0.02164955496381101,
+      "std": 0.000659570512099122
+    },
+    "fixed_share_mse": {
+      "mean": 0.009027883047769525,
+      "std": 0.0007098589666828789
+    },
+    "uniform_mse": {
+      "mean": 0.19448734804105455,
+      "std": 0.004228051162208221
+    },
+    "oracle_mse": {
+      "mean": 0.0063625153492454425,
+      "std": 0.00012824943292583538
+    },
+    "twensday_post50_mse": {
+      "mean": 0.09393719727810387,
+      "std": 0.011738682348904881
+    },
+    "signed_simplex_post50_mse": {
+      "mean": 0.08889009297561754,
+      "std": 0.005329895501637306
+    },
+    "fixed_share_post50_mse": {
+      "mean": 0.028711825480553906,
+      "std": 0.006034693177036797
+    },
+    "twensday_post200_mse": {
+      "mean": 0.03044230374714631,
+      "std": 0.0031716727822433365
+    },
+    "signed_simplex_post200_mse": {
+      "mean": 0.03184859852829615,
+      "std": 0.001478507180333563
+    },
+    "fixed_share_post200_mse": {
+      "mean": 0.012026263842223595,
+      "std": 0.0015246428389164163
+    },
+    "twensday_best_mass_post200": {
+      "mean": 0.7962867628719965,
+      "std": 0.016747567080023246
+    },
+    "signed_simplex_best_mass_post200": {
+      "mean": 0.7359309536793721,
+      "std": 0.009615871265168344
+    },
+    "fixed_share_best_mass_post200": {
+      "mean": 0.9292796347479845,
+      "std": 0.0013724695482174335
+    }
+  }
+}
