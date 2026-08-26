@@ -1,0 +1,21 @@
+{
+  "n_seeds": 12,
+  "steps": 9000,
+  "reward_delay": 30,
+  "summary": {
+    "twensday": {"mean": 0.9646372549019607, "std": 0.00467821729207941},
+    "lag1_only": {"mean": 0.8657843137254901, "std": 0.007094978215506252},
+    "uniform_dynamic": {"mean": 0.5051960784313726, "std": 0.014095311852688083},
+    "scrambled_addresses": {"mean": 0.5043039215686275, "std": 0.009492965687255375},
+    "shuffled_credit": {"mean": 0.7636176470588235, "std": 0.02468687994709926},
+    "fixed_share": {"mean": 0.9673627450980393, "std": 0.006368437587723338},
+    "signed_global": {"mean": 0.9533627450980392, "std": 0.005835787916593488},
+    "stateless": {"mean": 0.507686274509804, "std": 0.012648411540364479},
+    "oracle_sensor": {"mean": 0.975294117647059, "std": 0.004174398823343587},
+    "useful_structural_mass": {"mean": 0.880603592015417, "std": 0.01127748384472813},
+    "twensday_post_reliability_switch_100": {"mean": 0.8814583333333333, "std": 0.04754798380466714},
+    "twensday_post_reliability_switch_400": {"mean": 0.9491260711575196, "std": 0.013336997024733777},
+    "fixed_share_post_reliability_switch_100": {"mean": 0.879, "std": 0.051648249405634894},
+    "fixed_share_post_reliability_switch_400": {"mean": 0.9497093753130579, "std": 0.015519837490479532}
+  }
+}
