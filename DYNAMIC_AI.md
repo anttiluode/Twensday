@@ -4,7 +4,7 @@ This is a working research direction, not a novelty claim and not a definition o
 
 The question is narrower than "can an AI have hidden state?" RNNs, reservoirs, SSMs, spiking nets, adaptive filters and control systems already do that.
 
-> **Can a useful AI be built around an ongoing dynamical process whose active state changes the meaning of present traffic, whose finite longer-lived memories can preserve/reinstate selected states, and whose slower knowledge changes what future dynamics are easy to express and what deserves further learning?**
+> **Can a useful AI be built around an ongoing dynamical process whose active state changes the meaning of present traffic, whose finite longer-lived memories can preserve/reinstate selected states, and whose slower knowledge changes what future dynamics are easy to express, what deserves further learning, and what the system chooses to experience next?**
 
 The biological inspiration is modest:
 
@@ -68,6 +68,8 @@ remember exactly != generalize from
 active state != dormant state
 internal computation != exported traffic
 prediction error != useful curiosity
+surprise != learning progress
+learning progress != information gain between hypotheses
 ```
 
 A deliberately loose sketch is:
@@ -79,10 +81,11 @@ H(t+1)      = W(H(t), q(t), u(t); M(t))
 M(t+1)      = G(M(t), e(t), consequence(t), selected experience)
 ```
 
-The most interesting reverse arrow so far is:
+Two reverse arrows have now earned experiments:
 
 ```text
 M -> what deserves scarce H / learning capacity?
+M -> where should scarce observation / interaction be spent next?
 ```
 
 ---
@@ -307,6 +310,49 @@ The large exact-ID upper bound says that genuine recurring-context recognition w
 
 Do not tune DYN5 until it wins.
 
+## DYN6 — active curiosity survives; raw residual does not
+
+[`results/DYN6.md`](results/DYN6.md)
+
+The agent chose among six learnable regions and six irreducibly stochastic noisy-TV regions.
+
+Raw prediction-error curiosity failed catastrophically:
+
+```text
+noise fraction at 360 steps     0.867
+noise fraction at 600 steps     0.920
+noise fraction at 1200 steps    0.960
+final learnable MSE              0.10898
+```
+
+A prequential learning-progress signal compared the current predictor to a lagged copy **on a fresh observation before updating from it**. That simple standard-family heuristic improved active allocation:
+
+```text
+mean interactions to MSE < .01
+
+random                513.1
+count-balanced        504.4
+uncertainty           487.5
+learning progress     350.0
+oracle reducible      305.6
+```
+
+At 600 interactions:
+
+```text
+random MSE                 0.00823
+count-balanced             0.00798
+uncertainty                0.00791
+learning progress          0.00495
+oracle reducible           0.00379
+```
+
+This is established learning-progress / intrinsic-motivation territory, not a new curiosity algorithm. What matters for Twensday is the architectural result:
+
+> **the learner's current state of knowledge can beneficially change which future observations will train it.**
+
+The limitation matters too. Once the learnable regions are mostly mastered, progress becomes small everywhere and the weak revisit pressure sends the forced-choice agent back toward broad exploration; its noisy-TV fraction rises to `0.411` by 1,200 steps. DYN6 therefore earns scarce-effort allocation, not a permanent oracle of irreducibility.
+
 ---
 
 # What survives now
@@ -323,75 +369,79 @@ The surviving pieces are narrower:
 6. retaining an experience and consolidating/generalizing from it are different decisions;
 7. slow knowledge can guide scarce dormant-memory allocation by identifying what it cannot regenerate;
 8. a dormant old fast state can accelerate reacquisition when a stable context is genuinely identifiable;
-9. the current noisy partial-cue mechanism does not yet identify that context; outcome-conditioned mode inference explains the gain more simply.
+9. the current noisy partial-cue mechanism does not yet identify that context; outcome-conditioned mode inference explains the gain more simply;
+10. raw prediction error is a bad exploration objective in stochastic worlds, while prequential learning progress can improve where scarce observations are spent;
+11. the knowledge state can now close an active loop by changing the future data distribution it experiences.
 
-The strongest new conceptual sentence is therefore not "we built a hippocampus."
+The strongest conceptual sentence is no longer merely:
 
-It is:
+> **Spend capacity on what slow knowledge cannot explain.**
 
-> **A finite dynamic learner may benefit from spending memory and learning capacity on the residual between what is happening and what its slower knowledge can already explain.**
+DYN6 forces the extra clause:
 
-That sounds like curiosity, but prediction error alone is not enough.
+> **Spend scarce interaction where the boundary of current knowledge is moving — where observation is becoming understanding rather than remaining surprise.**
+
+That sounds like curiosity, but it still is not research.
 
 ---
 
-# DYN6 — curiosity must survive noisy TV
+# DYN7 — curiosity becomes experiment choice
 
-This is the next active-loop gate.
-
-The agent will choose what part of a world to sample next. Some regions are initially unexplained but learnable. At least one region is deliberately stochastic / irreducible: it can remain surprising forever without teaching the slow model anything useful.
-
-The loop is:
+A research-like learner does not merely ask:
 
 ```text
-M predicts world
-   ↓
-residual says what M does not explain
-   ↓
-agent chooses where to look / interact
-   ↓
-new signal changes q / M
-   ↓
-future residual changes
-   ↺
+where am I still improving?
 ```
 
-The raw-error curiosity policy should be expected to fail on the stochastic distractor. That is a feature of the test, not a surprise.
-
-The candidate signal is closer to:
+It often asks:
 
 ```text
-unexplained
-AND
-my interaction with it is producing learning progress
+several explanations still fit what I have seen
+which measurement / intervention would make them disagree most?
 ```
 
-rather than simply:
+That is a different computational object.
+
+DYN7 should therefore give the learner a finite set of competing hypotheses that are deliberately confounded by ordinary observations. The learner chooses an experiment or intervention, observes a consequence, updates belief, and chooses again.
 
 ```text
-surprising
+posterior / slow explanatory state M
+          ↓
+which candidate experiments separate live hypotheses?
+          ↓
+choose intervention a(t)
+          ↓
+world produces consequence
+          ↓
+fast belief / evidence state q changes
+          ↓
+M changes
+          ↺
 ```
 
 Mandatory attackers:
 
 ```text
-uniform/random exploration
-count-based exploration
-raw prediction-error curiosity
-learning-progress curiosity
-uncertainty / information-gain style selection where practical
-oracle reducible-error selector
+random experiment choice
+balanced / coverage sampling
+raw predictive variance / surprise heuristics
+learning-progress allocation
+query-by-committee / model disagreement
+standard Bayesian expected information gain
+oracle experiment selector
 ```
 
 Kill conditions:
 
-- if residual curiosity camps on irreducible noise, residual alone is rejected;
-- if a standard learning-progress / uncertainty policy does everything better, use the standard policy;
-- if active selection gives no sample-efficiency or adaptation gain over random/count-balanced sampling, curiosity has not earned a mechanism;
-- if a useful policy emerges, then add recurrence / dormant-state memory only when the task demands them.
+- if learning-progress curiosity does not choose discriminative experiments, do not stretch DYN6 into a research claim;
+- if Bayesian experimental design wins, record that as the right mature mechanism rather than renaming it Twensday;
+- if a cheaper dynamic approximation can track useful model disagreement online, test whether it preserves most of the sample-efficiency gain under changing/nonstationary hypotheses;
+- only after experiment choice works should dormant `H`, recurrence, or structural growth be reintroduced, and only where a task makes them necessary.
 
-This is the first gate where the system's own ignorance begins to alter the trajectory of experience that will train it.
+The useful target is not "autonomous scientist" as a slogan. It is a measurable primitive:
+
+> **Can an ongoing learner use its current explanatory uncertainty to create observations that distinguish between explanations faster than passive experience does?**
 
 # Current sentence
 
-> **Dynamic AI, in the Twensday sense, is a continuously running learner in which information can occupy different temporal roles: active state, short causal trace, dormant fast-write memory, and slow reusable knowledge. The slow system not only predicts; its failures can help allocate finite memory and, if DYN6 survives, may help choose what the system experiences next.**
+> **Dynamic AI, in the Twensday sense, is a continuously running learner in which information can occupy different temporal roles: active state, short causal trace, dormant fast-write memory, and slow reusable knowledge. Slow knowledge can guide scarce memory, and DYN6 shows that a learning-progress signal can also guide what the system samples next. The next wall is harder: turning active curiosity into experiment selection among competing explanations without pretending that standard active learning and Bayesian experimental design do not already exist.**
