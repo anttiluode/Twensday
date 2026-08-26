@@ -1,0 +1,20 @@
+name: DYN7 experiment choice
+
+on:
+  push:
+    paths:
+      - 'experiments/dyn7_experiment_choice.py'
+      - '.github/workflows/dyn7.yml'
+  workflow_dispatch:
+
+jobs:
+  dyn7:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Run DYN7 active experiment-choice gate
+        run: python experiments/dyn7_experiment_choice.py --seeds 48 --hypotheses 12 --actions 21 --max-steps 60 --threshold 0.95 --progress-beta 0.03
