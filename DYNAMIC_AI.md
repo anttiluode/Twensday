@@ -129,40 +129,68 @@ x(t) * x(t-1)
 
 So the machine was handed the relevant local relation. It learned which continuous broadcasts to trust, not which temporal computation should exist.
 
-That is the immediate wall.
+DYN1 attacked that cheat.
 
-## DYN1 — discover the temporal listener
+## DYN1 — active temporal listeners from raw streams
 
-Remove the explicit lag-product feature.
+[`results/DYN1.md`](results/DYN1.md) removes the explicit lag-product coordinate.
 
-Each point should receive raw traffic and own only a generic repertoire such as:
+The point receives raw traffic and owns a mixed bank of continuously occupied time windows with crude compressive, near-linear, and expansive local transfer shapes. Slow consequence-driven allocation chooses both which local temporal coordinates deserve capacity and which physical streams deserve trust.
 
-```text
-several leaky states / time constants
-several resonant states
-small fixed signed mixtures
-small generic local nonlinear conjunction bank
-peer broadcasts
-```
+The repertoire was motivated by fast-spiking basket-cell modeling work showing that passive morphology alone is not the whole temporal/spatial computation: supralinear and sublinear dendritic integration coexist, active dendritic spikes strongly affect output, and temporal integration changes over millisecond-to-hundred-millisecond windows. The software bank is only an abstraction of that lesson, not a basket-cell simulation.
 
-Slow consequence-driven allocation must discover which local dynamical coordinates are useful.
-
-Required attackers:
+GitHub Actions, twelve seeds:
 
 ```text
-explicit delay-line features
-RLS / adaptive filtering
-reservoir / echo-state network
-small RNN / GRU
-matched hand-written autocorrelation detector
-same-information multiplicative learners
+task-matched hand lag detector     0.9699
+basket-inspired active bank        0.8042
+matched random nonlinear bank      0.7717
+active bank, local growth frozen   0.5069
+passive leaky bank                 0.5065
 ```
 
-If the generic Twensday point only rediscovers a worse autocorrelation detector, record exactly that.
+DYN1 therefore earns three narrower statements:
+
+```text
+passive multiscale memory alone was not enough
+active local temporal nonlinearity created useful coordinates
+slow local structural selection was necessary to exploit them
+```
+
+But the exact hand-written temporal statistic still wins by a large margin. And the basket-inspired bank only modestly beats a matched generic nonlinear reservoir. Feature discovery remains open.
+
+One useful surprise was that final structural mass did **not** simply concentrate on the crude expansive/supralinear family:
+
+```text
+compressive   ~0.648
+linear        ~0.040
+expansive     ~0.312
+```
+
+So biology helped choose a repertoire but did not predict which abstract feature family this synthetic task would prefer. That is a good boundary to preserve.
+
+The immediate software attackers still missing from DYN1 are trained/matched RLS, adaptive FIR, echo-state readout, and small RNN/GRU models.
+
+## A third degree of freedom suggested by AIS / chandelier cells
+
+The DYN0/DYN1 machinery currently mixes two jobs: internal computation and emission.
+
+The chandelier-cell / axon-initial-segment literature suggests keeping another variable separate:
+
+```text
+local dynamics decide WHAT evidence exists
+structural mass decides WHICH evidence/routes deserve capacity
+AIS-like state decides HOW EASILY a point emits right now
+chandelier-like input can coordinate excitability across selected groups
+```
+
+This should not be read as "one global biological gain knob." Chandelier cells can contact hundreds of projection-neuron AISs, but connectivity is selective rather than universal and differs across projection-neuron subtypes. A better software abstraction is therefore a **selective low-rank/group output gate** plus slower per-point output-excitability adaptation.
+
+This mechanism should earn itself on a task where recurrent traffic is useful but can also saturate or become unstable. Ordinary AGC, learned biases, normalization, and standard RNN gating are mandatory attackers.
 
 ## DYN2 — let state live between points again
 
-DYN0 points broadcast evidence but do not need returning traffic to preserve their state.
+DYN0/DYN1 points broadcast evidence but do not need returning traffic to preserve the task-relevant state.
 
 The next network-level test should make a useful state impossible to maintain inside any one point alone:
 
@@ -174,6 +202,18 @@ A -> B -> A circulation becomes useful
 
 Then ask whether finite growth discovers/selects the recurrent subgraph that makes prediction or action possible.
 
+This is also the clean place to test an independent AIS/chandelier-like output gate:
+
+```text
+internal state may continue
+        ↓
+output threshold / excitability decides whether it is broadcast
+        ↓
+selective group feedback can prevent runaway recurrent traffic
+        ↓
+slow AIS-like adaptation changes baseline excitability
+```
+
 Controls:
 
 ```text
@@ -181,6 +221,9 @@ cut return traffic after growth
 shuffle broadcast addresses
 remove persistence requirement
 fixed random recurrent graph
+fixed output threshold
+global AGC / divisive normalization
+per-point learned bias or gain
 ordinary RNN / reservoir attacker
 ```
 
@@ -230,10 +273,11 @@ A useful result would be one of these:
 2. slow structure gives robustness or rapid reacquisition when dynamical regimes recur;
 3. one learned structure supports several fast state-dependent effective operators without retraining;
 4. recurrent structure grown from delayed consequence discovers a compact useful state machine rather than merely memorizing a supplied graph;
-5. on a real continuous stream, the architecture buys a measurable tradeoff in adaptation, compute, energy, memory, robustness, or hardware simplicity.
+5. an independent output-excitability mechanism stabilizes useful recurrent dynamics without erasing internal state, and does something ordinary normalization cannot do as cheaply;
+6. on a real continuous stream, the architecture buys a measurable tradeoff in adaptation, compute, energy, memory, robustness, or hardware simplicity.
 
 ## Current sentence
 
 > **Dynamic AI, in the Twensday sense, is a continuously running machine in which history lives in fast state, state changes the effect of present traffic, points keep broadcasting into one another, delayed consequence assigns credit to earlier local activity, and slower finite structure changes the dynamics through which future signals will move.**
 
-That is the question now. The experiments decide whether it is merely another coordinate system for known adaptive machinery or whether one of its constraints produces something worth keeping.
+The experiments decide whether this is merely another coordinate system for known adaptive machinery or whether one of its constraints produces something worth keeping.
